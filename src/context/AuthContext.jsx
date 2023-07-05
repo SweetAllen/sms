@@ -12,31 +12,47 @@ import { auth, db } from "../firebase";
 const userAuthContext = createContext();
 
 export function UserAuthContextProvider({ children }) {
-
-  //        await addDoc(collection(db, "rating"), {
-//- phone_no
-// - message
-// - sent  (0/1)
-// - source (excel/digital)
-  function addToDb(phone_no, message, sent, source) {
-    return  addDoc(collection(db, "smsdata"), {
-      phone_no: phone_no,
-      sent: sent,
-      source:source
+  const [user, setUser] = useState({});
+  const userRef = collection(db, 'users');
+  function logIn(email, password) {
+    return signInWithEmailAndPassword(auth, email, password);
+  }
+  function signUp(email, password) {
+    return createUserWithEmailAndPassword(auth, email, password);
+  }
+  function addToDb(email, password) {
+    return  setDoc(doc(db, "users", "userinfo"), {
+      email: email,
+      password: password
     
     });
   }
   function readData() {
-    return  getDocs(doc(db, "smsdata"))
+    return  getDocs(doc(db, "users", "userinfo"))
+  }
+  function logOut() {
+    return signOut(auth);
+  }
+  function googleSignIn() {
+    const googleAuthProvider = new GoogleAuthProvider();
+    return signInWithPopup(auth, googleAuthProvider);
   }
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Auth", user);
+      setUser(user);
+    });
 
-
-
-
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
-    <userAuthContext.Provider value={{ addToDb, readData }}>
+    <userAuthContext.Provider
+      value={{ user, logIn, signUp, logOut, googleSignIn, addToDb, readData }}
+    >
       {children}
     </userAuthContext.Provider>
   );
