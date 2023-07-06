@@ -88,7 +88,7 @@ const App = () => {
         <div>
       <Sidebar>
          <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/exceldata" element={<ExcelData />} />
           <Route path="/data" element={<Data />} />

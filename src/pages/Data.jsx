@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import {
   Box,
@@ -17,6 +17,8 @@ import { Delete, Edit } from '@mui/icons-material';
 // import { data, states } from './makeData';
 import * as XLSX from "xlsx";
 import '../../src/App.css';
+import axios from 'axios';
+import { async } from '@firebase/util';
 const Data = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 //   const [tableData, setTableData] = useState();
@@ -24,6 +26,12 @@ const Data = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [exceldata, setExcelData] = useState([]);
   const [tableData, setTableData] = useState(() => exceldata);
+
+  useEffect(() => {
+    getData()
+    
+  }, []);
+
 
   const handleCreateNewRow = (values) => {
     tableData.push(values);
@@ -33,25 +41,58 @@ const Data = () => {
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
       tableData[row.index] = values;
+
+      // console.log(values.phone)
       //send/receive api updates here, then refetch or update local table data for re-render
-      setTableData([...tableData]);
-      exitEditingMode(); //required to exit editing mode and close modal
+       axios .put("https://sms-server-tau.vercel.app/api/v1/sms",
+       {
+        "id":row.getValue('id'),
+       "phone":values.phone,
+     "message":values.message
+      })
+      .then((response) => {
+        console.log(response.data);
+        setTableData([...tableData]);
+        exitEditingMode(); //required to exit editing mode and close modal
+
+      });
     }
   };
-
+  // axios
+  // .put(`${baseURL}/1`, {
+  //   title: "Hello World!",
+  //   body: "This is an updated post."
+  // })
+  // .then((response) => {
+  //   setPost(response.data);
+  // });
   const handleCancelRowEdits = () => {
     setValidationErrors({});
   };
 
   const handleDeleteRow = useCallback(
-    (row) => {
+   async (row) => {
       if (
-        !confirm(`Are you sure you want to delete ${row.getValue('firstName')}`)
+        !confirm(`Are you sure you want to delete ${row.getValue('id')}`)
       ) {
         return;
       }
       //tableData
       //send api delete request here, then refetch or update local table data for re-render
+      await axios.delete("https://sms-server-tau.vercel.app/api/v1/sms",
+      {
+        "id":row.getValue('id')
+    }
+ 
+    // lV89pVH5FvSdK0AVVI72
+      )
+      .then((response) => {
+        console.log(response)
+        // console.log(JSON.stringify(response.data.listing[1]));
+        // setExcelData(response.data.listing)
+        // tableData.push(response.data.listing);
+        // setTableData([...response.data.listing]);
+      });
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
     },
@@ -69,7 +110,8 @@ const Data = () => {
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
        setExcelData(parsedData);
-      
+      //  tableData.push(parsedData);
+      //  setTableData([...tableData]);
 
 
       // for (let i = 0; i < data.length; i++) {
@@ -80,7 +122,21 @@ const Data = () => {
       
     };
   }//makeData
+//
 
+  const getData= async() =>{
+    
+    await axios.get("https://sms-server-tau.vercel.app/api/v1/sms"
+ 
+ 
+    )
+    .then((response) => {
+      console.log(JSON.stringify(response.data.listing[1]));
+      // setExcelData(response.data.listing)
+      // tableData.push(response.data.listing);
+      setTableData([...response.data.listing]);
+    });
+  }
   const getCommonEditTextFieldProps = useCallback(
     (cell) => {
       return {
@@ -172,37 +228,34 @@ const Data = () => {
 //   );
 const columns = 
 [
+
   {
-   accessorKey: 'phone', //access nested data with dot notation
-    header: 'phone',
-    size: 150,
-  },
-  {
-   accessorKey: 'ecode',
-  header: 'ecode',
+   accessorKey: 'id',
+  header: 'id',
   size: 150,
  },
  {
-    accessorKey: 'bank', //normal accessorKey
-    header: 'bank',
+  accessorKey: 'phone',
+ header: 'phone',
+ size: 150,
+},
+ {
+    accessorKey: 'message', //normal accessorKey
+    header: 'message',
    size: 200,
   },
  {
-  accessorKey: 'refunddate',
-   header: 'refunddate',
+  accessorKey: 'source',
+   header: 'source',
     size: 50,
  },
- {
-   accessorKey: 'amount',
-    header: 'amount',
-    size: 150,
-  },
+
 
        {
-          accessorKey: 'status',
+          accessorKey: 'sent',
        // filterVariant: 'range', //if not using filter modes feature, use this instead of filterFn
         //  filterFn: 'between',
-         header: 'status',
+         header: 'sent',
         size: 200,
          //custom conditional format and styling
         Cell: ({ cell }) => (
@@ -235,7 +288,11 @@ const columns =
 ),
 
 },
-
+{
+  accessorKey: 'created_at',
+   header: 'created_at',
+    size: 50,
+ },
     
 
 ]
@@ -283,7 +340,7 @@ const columns =
             onClick={() => setCreateModalOpen(true)}
             variant="contained"
           >
-            Create New Account
+            Create New
           </Button>
         )}
       />
@@ -314,7 +371,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Create New Account</DialogTitle>
+      <DialogTitle textAlign="center">Create New</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -340,7 +397,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
       <DialogActions sx={{ p: '1.25rem' }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Create New Account
+          Create New 
         </Button>
       </DialogActions>
     </Dialog>
