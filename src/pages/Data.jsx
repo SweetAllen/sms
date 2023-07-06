@@ -47,8 +47,8 @@ const Data = () => {
        axios .put("https://sms-server-tau.vercel.app/api/v1/sms",
        {
         "id":row.getValue('id'),
-       "phone":values.phone,
-     "message":values.message
+         "phone":values.phone,
+        "message":values.message
       })
       .then((response) => {
         console.log(response.data);
@@ -233,6 +233,7 @@ const columns =
    accessorKey: 'id',
   header: 'id',
   size: 150,
+  enableEditing:false
  },
  {
   accessorKey: 'phone',
@@ -313,6 +314,9 @@ const columns =
             size: 120,
           },
         }}
+        
+        initialState={{ columnVisibility: { id: false } }} //hide firstName column by default
+
         columns={columns} 
         data={tableData} 
         editingMode="modal" //default
