@@ -42,7 +42,7 @@ export default function Login() {
     try {
       await logIn(data.get("email"), data.get("password"));
 
-      navigate("/Dashboard");
+      navigate("/data");
     } catch (err) {
       setError(err.message);
     }

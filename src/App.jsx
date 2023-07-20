@@ -86,21 +86,36 @@ const App = () => {
 
     <UserAuthContextProvider>
         <div>
-      <Sidebar>
          <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/exceldata" element={<ExcelData />} />
+          <Route path="/" element={<Login />} />
+         
           <Route path="/data" element={<Data />} />
           {/* <Route path="/analytics" element={<Analytics />} />
          <Route path="/product" element={<Product />} />
           <Route path="/productList" element={<ProductList />} /> */}
          </Routes>
-       </Sidebar>
      </div>
   </UserAuthContextProvider>
 
 
+
+
+
+
+
+/* <div>
+<Sidebar>
+   <Routes>
+    <Route path="/" element={<Dashboard />} />
+    <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/exceldata" element={<ExcelData />} />
+    <Route path="/data" element={<Data />} />
+    {/* <Route path="/analytics" element={<Analytics />} />
+   <Route path="/product" element={<Product />} />
+    <Route path="/productList" element={<ProductList />} /> */
+//    </Routes>
+//  </Sidebar>
+// </div> */}
 
     // <div>
     //   <Sidebar>
