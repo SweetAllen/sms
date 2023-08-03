@@ -19,6 +19,10 @@ import { async } from '@firebase/util';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content'
+
 function ExcelData() {
 
    const [exceldata, setExcelData] = useState([]);
@@ -26,6 +30,8 @@ function ExcelData() {
    const [test, setTest] = useState([]);
    const [syncdata, setSyncData] = useState();
    const [rowSelection, setRowSelection] = useState({});
+   const navigate = useNavigate();
+
 //    {
 //     "senderid": "Default",
 //      "number": "095122503 ,09450049715", 
@@ -38,7 +44,16 @@ function ExcelData() {
   //   size: 150,
   // }]);
     useEffect(() => {
+
+      if (sessionStorage.getItem('isAuth') === null) {
+        navigate("/");
+      console.log("aaaaa")
+  
+      }else{
+        console.log("sssss")
+      }
         //do something when the row selection changes...
+      
         console.info({ rowSelection });
       }, [rowSelection]);
     
@@ -64,82 +79,89 @@ function ExcelData() {
             header: 'bank',
            size: 200,
           },
+        //  {
+        //   accessorKey: 'refunddate',
+        //    header: 'refunddate',
+        //     size: 50,
+        //  },
+
+
+        {
+          accessorFn: (row) =>String(new Date(Math.round((row.refunddate - 25569) * 864e5))).slice(4, 15),      
+           //convert to Date for sorting and filtering
+          id: 'refunddate',
+          header: 'Refund Date',
+          filterFn: 'lessThanOrEqualTo',
+          sortingFn: 'datetime',
+          Cell: ({ cell }) => (cell.getValue()).split(" ").join('-'),
+          // cell.getValue('refunddate[1]')+ '-' + cell.getValue('cell.refunddate[0]') + '-' + cell.getValue('cell.refunddate[2]').slice(2, 4),  //render Date as a string
+
+          // row.refunddate[1] + '-' + row.refunddate[0] + '-' + row.refunddate[2].slice(2, 4),  //render Date as a string
+
+          Header: ({ column }) => <em>{column.columnDef.header}</em>, //custom header markup
+          //Custom Date Picker Filter from @mui/x-date-pickers
+          Filter: ({ column }) => (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                onChange={(newValue) => {
+                  column.setFilterValue(newValue);
+                }}
+                slotProps={{
+                  textField: {
+                    helperText: 'Filter Mode: Less Than',
+                    sx: { minWidth: '120px' },
+                    variant: 'standard',
+                  },
+                }}
+                value={column.getFilterValue()}
+              />
+            </LocalizationProvider>
+          ),
+        },
          {
-          accessorKey: 'refunddate',
-           header: 'refunddate',
-            size: 50,
-         },
-        // {
-        //   accessorFn: (row) => new Date(row.refunddate), //convert to Date for sorting and filtering
-        //   id: 'refunddate',
-        //   header: 'Refund Date',
-        //   filterFn: 'lessThanOrEqualTo',
-        //   sortingFn: 'datetime',
-        //   Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(), //render Date as a string
-        //   Header: ({ column }) => <em>{column.columnDef.header}</em>, //custom header markup
-        //   //Custom Date Picker Filter from @mui/x-date-pickers
-        //   Filter: ({ column }) => (
-        //     <LocalizationProvider dateAdapter={AdapterDayjs}>
-        //       <DatePicker
-        //         onChange={(newValue) => {
-        //           column.setFilterValue(newValue);
-        //         }}
-        //         slotProps={{
-        //           textField: {
-        //             helperText: 'Filter Mode: Less Than',
-        //             sx: { minWidth: '120px' },
-        //             variant: 'standard',
-        //           },
-        //         }}
-        //         value={column.getFilterValue()}
-        //       />
-        //     </LocalizationProvider>
-        //   ),
-        // },
-         {
-           accessorKey: 'amount',
+          accessorFn: (row) =>row.amount.toLocaleString('en'),      
             header: 'amount',
             size: 150,
-          },
+          }
        
-               {
-                  accessorKey: 'status',
-               // filterVariant: 'range', //if not using filter modes feature, use this instead of filterFn
-                //  filterFn: 'between',
-                 header: 'status',
-                size: 200,
-                 //custom conditional format and styling
-                Cell: ({ cell }) => (
-                   <Box
-                component="span"
-                     sx={(theme) => ({
-                 backgroundColor:
-                         cell.getValue() < 50_000
-                           ? theme.palette.error.dark
-                         : cell.getValue() >= 50_000 && cell.getValue() < 75_000
-                         ? theme.palette.warning.dark
-                          : theme.palette.success.dark,
-                    borderRadius: '0.25rem',
-                       color: '#fff',
-                       maxWidth: '9ch',
-                     p: '0.25rem',
-                  })}
-                 >
-                    {cell.getValue()
-                  //   ?.
-                  //   toLocaleString?.('en-US', {
-                  // style: 'currency',
-                  //   currency: 'USD',
-                  //   minimumFractionDigits: 0,
-                  //      maximumFractionDigits: 0,
-                    // }
+//                {
+//                   accessorKey: 'status',
+//                  header: 'status',
+//                 size: 200,
+//                  //custom conditional format and styling
+//                 Cell: ({ cell }) => (
+//                    <Box
+//                 component="span"
+//                      sx={(theme) => ({
+//                  backgroundColor:
+//                          cell.getValue() < 50_000
+//                            ? theme.palette.error.dark
+//                          : cell.getValue() >= 50_000 && cell.getValue() < 75_000
+//                          ? theme.palette.warning.dark
+//                           : theme.palette.success.dark,
+//                     borderRadius: '0.25rem',
+//                        color: '#fff',
+//                        maxWidth: '9ch',
+//                      p: '0.25rem',
+//                   })}
+//                  >
+//                     {cell.getValue()
+//                   //   ?.
+//                   //   toLocaleString?.('en-US', {
+//                   // style: 'currency',
+//                   //   currency: 'USD',
+//                   //   minimumFractionDigits: 0,
+//                   //      maximumFractionDigits: 0,
+//                     // }
                     
-                    }
-              </Box>
-),
+//                     }
+//               </Box>
+// ),
 
-},
+// },
  ]
+
+
          const handleFileUpload=  (e) => {
     e.preventDefault();
     const reader = new FileReader();
@@ -154,65 +176,20 @@ function ExcelData() {
       
 
 
-      // for (let i = 0; i < data.length; i++) {
-       
-      //   console.log(data[i])
-      // }
-      
+ 
       
     };
-  }//makeData
+  }
 
-  //Ph;No.
-
-//   const sendtest= async(e) => {
-//     e.preventDefault()
-//     console.log(exceldata)
-
-
-//  }
-
+  
   
   return (
-
-  
-    <div className="App">
-
-
-      
-
-            <input 
+  <div className="App">
+      <input 
         type="file" 
         accept=".xlsx, .xls" 
         onChange={handleFileUpload} 
       />
-
-{/* <div style={{ display: 'flex', gap: '0.5rem' }}>
-           <Button
-             color="error"
-            //  disabled={!table.getIsSomeRowsSelected()}
-              // onClick={handleDeactivate}
-              variant="contained"
-            >
-              Deactivate
-          </Button>
-             <Button
-             color="success"
-            //  disabled={!table.getIsSomeRowsSelected()}
-            // onClick={handleActivate}
-              variant="contained"
-          >
-              Activatev
-           </Button> 
-            <Button
-             color="info"
-            //   disabled={!table.getIsSomeRowsSelected()}
-            //  onClick={handleContact}
-             variant="contained"
-          >
-             Contact
-            </Button> 
-          </div> */}
 <MaterialReactTable 
 columns={columns} 
 data={exceldata} 
@@ -222,129 +199,77 @@ data={exceldata}
       enablePinning
      enableRowActions
       enableRowSelection
-      
-      // getRowId={(row) => row} //give each row a more useful id      onRowSelectionChange={setRowSelection} //connect internal row selection state to your own
-      // onRowSelectionChange={selectRow} 
       onRowSelectionChange={setRowSelection}
       state={{ rowSelection }} 
-      // initialState={{ showColumnFilters: true }}
-     positionToolbarAlertBanner="bottom"
-     
-
-    //  renderRowActionMenuItems={({ closeMenu }) => [
-    //   <MenuItem
-    //    key={0}
-    //     onClick={() => {
-    //      // View profile logic...
-    //      closeMenu();
-    //     }}
-    //     sx={{ m: 0 }}
-    //  >
-    //     <ListItemIcon>
-    //      <AccountCircle />
-    //    </ListItemIcon>
-    //     View Profile
-    //   </MenuItem>,
-    // <MenuItem
-    //     key={1}
-    //     onClick={() => {
-    //     // Send email logic...
-    //       closeMenu();
-    //     }}
-    //      sx={{ m: 0 }}
-    //  >
-    //     <ListItemIcon>
-    //      <Send />
-    //    </ListItemIcon>
-    //   Send Email
-    //    </MenuItem>,
-    //  ]}
-    renderTopToolbarCustomActions={({ table }) => {
-      const handleDeactivate = () => {
-      table.getSelectedRowModel().flatRows.map((row) => {
-           alert('deactivating ' + row.getValue('ecode'));
-        });
-      };
-
-     const handleSms = () => {
-      let ph
-      let userData
-      let msg
-      let day
-        table.getSelectedRowModel().flatRows.map((row) => {
-          // alert('activating ' + row.getValue('ecode'));
-          // setSyncData(row.getValue('phone'))
-          console.log(row);
-
-          ph=row.getValue('phone')
-    
-
-          let msg1="Payment has been transferred for"
-          let msg2= row.getValue('ecode')
-          let msg3=row.getValue('amount')
-          let msg4=row.getValue('refunddate')
-          
-
-          let msg5=". Royal Express Finance hotlines: 09765400804, 09765400801"
-          msg= msg1.concat(" ",msg2 +","," ",msg3+ "Ks,", "  ",  msg4, " ", msg5)        
-          const userData = {
-            "phone":ph.toString(),
-            "message":msg
-          };
-          //toUTCString()
-          //  console.log(msg)
-           axios.post("https://sms-server-tau.vercel.app/api/v1/sms-server", 
-           userData
+       positionToolbarAlertBanner="bottom"
+       renderTopToolbarCustomActions={({ table }) => {
+      const handleSms = () => {
+        const MySwal = withReactContent(Swal)
+        MySwal.fire({
+          title: 'Are you sure?',
+          text: "Send SMS!",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, send it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            let ph
+            let ecode
+            let amount
+            let date
+            let msg
+   table.getSelectedRowModel().flatRows.map((row) => {
+      
+                ph=row.getValue('phone')
+                ecode=row.getValue('ecode')
+                amount=row.getValue('amount')
+                date=row.getValue('refunddate')
+                let msg1="Payment has been transferred for"
+                let msg5=". Royal Express Finance hotlines: 09765400804, 09765400801"
+               msg= msg1.concat(" ",ecode.toString() +","," ",amount+ "Ks,", "  ", date, " ", msg5)    
+                // msg=row.getValue('message')
+        
+               const userData = {
+                  "phone":ph.toString(),
+                  "message":msg
+                };
+                //toUTCString()
+                 console.log(userData)
+                //  axios.post("https://sms-server-tau.vercel.app/api/v1/sms-server", 
+                //  userData
+             
+                // )
+                // .then((response) => {
+                //   console.log(response);
+                //   Swal.fire(
+                //     'Good Job!',
+                //     'Your file has been sent',
+                //     'success'
+                //   )
+                // });
+                        });
        
-          )
-          .then((response) => {
-            console.log(response);
-          });
-                  });
-     
-                  // Payment has been transferred for E101516, 300000Ks 3/20/2023 . Royal Express Finance hotlines: 09765400804, 09765400801
-     };
-       const handleContact = async() => {
-          let fib
-         table.getSelectedRowModel().flatRows.map((row) => {
-          //  alert('contact ' + row.getValue('ecode'));
-            //  setSyncData(row.getValue('phone'))
-                  fib=row.getValue('phone');
-         });
-         console.log(fib)
-         await addDoc(collection(db, "smstest"), {
-          "phone":fib,
-          "msg": "testing"
-         
-        });
-     };
+          }
+        })
 
+       
+       };
        return (
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-           <Button
-           color="error"
-          //  disabled={table.getIsSomeRowsSelected()}
-            onClick={handleDeactivate}
-            variant="contained"
-        >
-            Deactivate
-          </Button>
+
         <Button
           color="success"
-            // disabled={table.getIsSomeRowsSelected()}
-             onClick={handleSms}
+          disabled={  !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected() }    
+          onClick={handleSms}
             variant="contained"
           >
+            
            Send SMS
            </Button>
-           <Button
-           color="info"
-          // disabled={table.getIsSomeRowsSelected()}
-            // onClick={handleContact}
-             variant="contained"
-        >
-           aSync to firebase
-           </Button>
+
+
        </div>
       );
     }}

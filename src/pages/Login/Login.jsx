@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -11,14 +12,42 @@ import logo from '../../assets/logo.png'
 import { useAuth } from "../../context/AuthContext";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { redirect } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { logIn } = useAuth();
   const navigate = useNavigate();
+  const [isLoggedIn, setisLoggedIn] = useState(false);
+  const [token, setToken] = useState("");
+
   // const handleSubmit = async (e) => {
   //   const data = new FormData(event.currentTarget);
+  useEffect(() => {
+    // window.onbeforeunload = () => {
+    //   sessionStorage.removeItem('isAuth');
+    // }
+    // Checking if user is not loggedIn
+    if (!isLoggedIn) {
+      navigate("/");
+    } else {
+      navigate("/dashboard");
+      // navigate({
+      
+      //   pathname: "/viewst",
+    
+      //   search: createSearchParams ({
+        
+      //   id: "naveenkumar"
+        
+      //   }). toString()
+        
+      //   });
+      sessionStorage.setItem('isAuth', 'true');
+
+    }
+  }, [navigate, isLoggedIn]);
 
   //   console.log(data.get("email"),)
   //   e.preventDefault();
@@ -40,9 +69,29 @@ export default function Login() {
     });
         setError("");
     try {
-      await logIn(data.get("email"), data.get("password"));
+      await logIn(data.get("email"), data.get("password"))
 
-      navigate("/data");
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        
+           console.log(user.accessToken)
+           if(user.accessToken!= null){
+            setisLoggedIn(true)
+            setToken(user.accessToken)
+           }else{
+            setisLoggedIn(false)
+
+           }
+        // navigate("/data");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        
+      });
+
+     
     } catch (err) {
       setError(err.message);
     }

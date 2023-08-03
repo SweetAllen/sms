@@ -16,17 +16,17 @@ const Sidebar = ({children}) => {
     const toggle = () => setIsOpen (!isOpen);
     const menuItem=[
         {
-            path:"/",
+            path:"/dashboard",
             name:"Dashboard",
             icon:<FaTh/>
         },
+        // {
+        //     path:"/dashboard/exceldata",
+        //     name:"Send SMS",
+        //     icon:<FaCommentAlt/>
+        // },
         {
-            path:"/exceldata",
-            name:"Send SMS",
-            icon:<FaCommentAlt/>
-        },
-        {
-            path:"/data",
+            path:"/dashboard/data",
             name:"Data",
             icon:<FaThList/>
         },

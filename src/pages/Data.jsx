@@ -27,11 +27,11 @@ import { collection } from 'firebase/firestore';
 import { db } from '../firebase';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
-
+import { useNavigate } from 'react-router-dom';
+import { redirect } from "react-router-dom";
 const Data = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 //   const [tableData, setTableData] = useState();
-
   const [validationErrors, setValidationErrors] = useState({});
   const [exceldata, setExcelData] = useState([]);
   const [tableData, setTableData] = useState(() => exceldata);
@@ -39,11 +39,28 @@ const Data = () => {
   const [open, setOpen] = React.useState(false);
   const [smsdisable, setSmsDisable] = useState(true);
   const [id, setId] = useState();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+ getData()
+if (sessionStorage.getItem('isAuth') === null) {
+      navigate("/");
+    console.log("aaaaa")
 
+    }else{
+      console.log("sssss")
+    }
+    // console.log("Hiiiiiii",sessionStorage.getItem('isAuth'))
+    // window.addEventListener("beforeunload", () => sessionStorage.removeItem('isAuth'));
+    // window.history.replaceState({}, document.title)
 
+    // window.onbeforeunload = () => {
+    //   sessionStorage.removeItem('isAuth');
+    // }
+    // Checking if user is not loggedIn
 
-
+  }, []);
+  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -52,12 +69,8 @@ const Data = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
   //upload firebase
   const handleupload = () => {
-
-
-
     setOpen(false);
     let msg
     var currentdate = new Date(); 
@@ -86,15 +99,6 @@ let datetime = currentdate.getDate() + "-"
           "source":"excel",
           "message":msg
         }
-
-        // month = "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(month) / 3 + 1
-        // console.log(month)
-        // if (month.toString().length <= 1)
-        //     month = '0' + month
-      
-        // const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    // console.log(firebasedata)
-// console.log(date.toLocaleDateString('de-DE', options));
          addDoc(collection(db, "smsdata"),
          {
           "created_at":datetime.toString(),
@@ -104,30 +108,25 @@ let datetime = currentdate.getDate() + "-"
           "sent":"0",
           "sent_at":null,
           "updated_at":datetime.toString(),
-
-        }
+ }
         ).then((snapshot)=>{
           setId(snapshot.id)
            if(snapshot.id != null){
 
-            // window.location.reload(true)
 
             const MySwal = withReactContent(Swal)
             MySwal.fire({
              position: 'center',
              icon: 'success',
              title: 'Your work has been saved',
-            //  confirmButtonColor: '#3085d6',
-            //  cancelButtonColor: '#d33',
-            //  confirmButtonText: 'Ok!',
+
                   showConfirmButton: false,
              timer: 4000
             }).then((result) => {
               window.location.reload(true)
             })
            }
-          // window.location.reload(true)
-          //  console.log(snapshot.id)
+
         })
 
 
@@ -146,10 +145,7 @@ let datetime = currentdate.getDate() + "-"
 
 //hide menu and login page
 
-  useEffect(() => {
-    getData()
-    
-  }, []);
+
 
 
   const handleCreateNewRow = (values)  => {
@@ -272,7 +268,7 @@ let datetime = currentdate.getDate() + "-"
  
     )
     .then((response) => {
-      console.log("Hello",JSON.stringify(response.data.listing));
+      // console.log("Hello",JSON.stringify(response.data.listing));
       // setExcelData(response.data.listing)
       // tableData.push(response.data.listing);
       setTableData([...response.data.listing]);
@@ -309,8 +305,7 @@ let datetime = currentdate.getDate() + "-"
     [validationErrors],
   );
 
-
-const columns = 
+  const columns = 
 [
 
   {
@@ -339,11 +334,8 @@ const columns =
   accessorKey: 'source',
    header: 'source',
     size: 50,
-
  },
-
-
-       {
+ {
           accessorKey: 'sent',
        // filterVariant: 'range', //if not using filter modes feature, use this instead of filterFn
         //  filterFn: 'between',
@@ -355,11 +347,11 @@ const columns =
         component="span"
              sx={(theme) => ({
          backgroundColor:
-                 cell.getValue() < 50_000
-                   ? theme.palette.error.dark
-                 : cell.getValue() >= 50_000 && cell.getValue() < 75_000
-                 ? theme.palette.warning.dark
-                  : theme.palette.success.dark,
+                 cell.getValue() === 0
+                   ? theme.palette.warning.dark 
+                 : cell.getValue() === 1 && cell.getValue() === 1
+                 ? theme.palette.success.dark
+                  : theme.palette.warning.dark,
             borderRadius: '0.25rem',
                color: '#fff',
                maxWidth: '9ch',
@@ -397,23 +389,21 @@ const handleContact = () => {
 };
   return (
     <div className="App">
-
-<input 
+       <input 
         type="file" 
-        accept=".xlsx, .xls" 
-        onChange={handleFileUpload} 
-
-      />
-    <div>
-  
-      <Dialog
+        accept=".xlsx, .xls, .csv" 
+        onChange={handleFileUpload} />
+        <div>
+        <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
+
         {/* <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
+          {"Use Google's location service?
+          "}
         </DialogTitle> */}
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -428,8 +418,6 @@ Are you sure want to upload this file?
         </DialogActions>
       </Dialog>
     </div>
-
-
       <MaterialReactTable
         displayColumnDefOptions={{
           'mrt-row-actions': {
@@ -441,7 +429,6 @@ Are you sure want to upload this file?
         }}
         
         initialState={{ columnVisibility: { id: false,source:false,ecode:false } }} //hide firstName column by default
-
         columns={columns} 
         data={tableData} 
         editingMode="modal" //default
@@ -465,8 +452,8 @@ Are you sure want to upload this file?
             </Tooltip>
           </Box>
         )}
-        renderTopToolbarCustomActions={({ table }) => {
 
+        renderTopToolbarCustomActions={({ table }) => {
           const handleSms = () => {
             const MySwal = withReactContent(Swal)
             MySwal.fire({
@@ -483,19 +470,21 @@ Are you sure want to upload this file?
                 let userData
                 let msg
                 let day
-    
+                let id
                   table.getSelectedRowModel().flatRows.map((row) => {
           
                     ph=row.getValue('phone')
                     msg=row.getValue('message')
-            
+                    id=row.getValue('id')
+
                     
                    const userData = {
                       "phone":ph.toString(),
-                      "message":msg
+                      "message":msg,
+                      "id":id.toString()
                     };
                     //toUTCString()
-                     console.log(userData)
+                     console.log(id)
                      axios.post("https://sms-server-tau.vercel.app/api/v1/sms-server", 
                      userData
                  
@@ -507,6 +496,8 @@ Are you sure want to upload this file?
                         'Your file has been sent',
                         'success'
                       )
+                      window.location.reload(true)
+
                     });
                             });
            

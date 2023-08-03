@@ -69,40 +69,37 @@
 
 import React from 'react';
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard.jsx';
 import Analytics from './pages/Analytics.jsx';
 import Comment from './pages/Comment.jsx';
 import Product from './pages/Product.jsx';
 import ProductList from './pages/ProductList.jsx';
-import ExcelData from './pages/ExcelData';
-import Data from './pages/Data';
+import DashboardExcelData from './pages/ExcelData';
+import DashboardData from './pages/Data';
 import SidebarLayout from './components/SidebarLayout';
 import Login from './pages/Login/Login';
 import { UserAuthContextProvider } from './context/AuthContext';
 const App = () => {
   return (
 
-    <UserAuthContextProvider>
-        <div>
-         <Routes>
-          <Route path="/" element={<Login />} />
-         
-          <Route path="/data" element={<Data />} />
-          {/* <Route path="/analytics" element={<Analytics />} />
-         <Route path="/product" element={<Product />} />
-          <Route path="/productList" element={<ProductList />} /> */}
-         </Routes>
+
+<UserAuthContextProvider>
+ <div>
+
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />}>
+              {/* <Route path="/dashboard/exceldata" element={<DashboardExcelData />} /> */}
+              <Route path="/dashboard/data" element={<DashboardData />} />
+            </Route>
+            {/* <Route path="/analytics" element={<Analytics />} />
+            <Route path="/product" element={<Product />} />
+            <Route path="/productList" element={<ProductList />} /> */}
+          </Routes>
      </div>
   </UserAuthContextProvider>
-
-
-
-
-
-
-
 /* <div>
 <Sidebar>
    <Routes>
