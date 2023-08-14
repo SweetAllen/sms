@@ -3,7 +3,7 @@ import Sidebar from '../components/SidebarLayout';
 
 const Dashboard = () => {
     return (
-        <div>
+        <div> 
             <Sidebar>
                 <h1>dashboard page</h1>
             </Sidebar>
@@ -12,3 +12,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

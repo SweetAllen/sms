@@ -25,14 +25,20 @@ export default function Login() {
   // const handleSubmit = async (e) => {
   //   const data = new FormData(event.currentTarget);
   useEffect(() => {
+
+     console.log(isLoggedIn)
     // window.onbeforeunload = () => {
     //   sessionStorage.removeItem('isAuth');
     // }
     // Checking if user is not loggedIn
-    if (!isLoggedIn) {
-      navigate("/");
+    if (isLoggedIn) {
+      console.log("true", isLoggedIn)
+
+      navigate("/dashboard/exceldata");
     } else {
-      navigate("/dashboard");
+      console.log("false", isLoggedIn)
+
+      navigate("");
       // navigate({
       
       //   pathname: "/viewst",

@@ -91,7 +91,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />}>
-              {/* <Route path="/dashboard/exceldata" element={<DashboardExcelData />} /> */}
+              <Route path="/dashboard/exceldata" element={<DashboardExcelData />} />
               <Route path="/dashboard/data" element={<DashboardData />} />
             </Route>
             {/* <Route path="/analytics" element={<Analytics />} />

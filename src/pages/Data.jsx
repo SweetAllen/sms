@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect, CSSProperties } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
-
 import { MaterialReactTable } from 'material-react-table';
 import {
   Box,
@@ -43,128 +42,110 @@ const Data = () => {
 
   useEffect(() => {
  getData()
-if (sessionStorage.getItem('isAuth') === null) {
-      navigate("/");
-    console.log("aaaaa")
+// if (sessionStorage.getItem('isAuth') === null) {
+//       navigate("/");
+//     console.log("aaaaa")
 
-    }else{
-      console.log("sssss")
-    }
+//     }else{
+//       console.log("sssss")
+//     }
     // console.log("Hiiiiiii",sessionStorage.getItem('isAuth'))
     // window.addEventListener("beforeunload", () => sessionStorage.removeItem('isAuth'));
     // window.history.replaceState({}, document.title)
 
     // window.onbeforeunload = () => {
-    //   sessionStorage.removeItem('isAuth');
+     //   sessionStorage.removeItem('isAuth');
     // }
     // Checking if user is not loggedIn
 
   }, []);
   
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  // const handleClickOpen = () => {
+  //   setOpen(true);
+  // };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // const handleClose = () => {
+  //   setOpen(false);
+  // };
   //upload firebase
-  const handleupload = () => {
-    setOpen(false);
-    let msg
-    var currentdate = new Date(); 
-let datetime = currentdate.getDate() + "-"
-                + (currentdate.getMonth()+1)  + "-" 
-                + currentdate.getFullYear() +"  "
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-      // console.log(datetime)
-    exceldata.map((row) => {
-      let converted_date = new Date(Math.round((row.refunddate - 25569) * 864e5));
-      converted_date = String(converted_date).slice(4, 15)
-      row.refunddate = converted_date.split(" ")
-      let day = row.refunddate[1];
-      let month = row.refunddate[0];
-      let year = row.refunddate[2];
-      const date = day + '-' + month + '-' + year.slice(2, 4)
-      // console.log(date)
-      let msg1="Payment has been transferred for"
-       let msg5=". Royal Express Finance hotlines: 09765400804, 09765400801"
-      msg= msg1.concat(" ",row.ecode.toString() +","," ",row.amount.toLocaleString('en')+ "Ks,", "  ", date, " ", msg5)    
-      const firebasedata=
-        {
-          "phone":row.phone.toString(),
-          "source":"excel",
-          "message":msg
-        }
-         addDoc(collection(db, "smsdata"),
-         {
-          "created_at":datetime.toString(),
-          "phone":row.phone.toString(),
-          "source":"excel",
-          "message":msg,
-          "sent":"0",
-          "sent_at":null,
-          "updated_at":datetime.toString(),
- }
-        ).then((snapshot)=>{
-          setId(snapshot.id)
-           if(snapshot.id != null){
+//   const handleupload = () => {
+//     setOpen(false);
+//     let msg
+//     let test1=[]
+//     let test2={}
+//     var currentdate = new Date(); 
+// let datetime = currentdate.getDate() + "-"
+//                 + (currentdate.getMonth()+1)  + "-" 
+//                 + currentdate.getFullYear() +"  "
+//                 + currentdate.getHours() + ":"  
+//                 + currentdate.getMinutes() + ":" 
+//                 + currentdate.getSeconds();
+//       // console.log(datetime)
+//     exceldata.map((row) => {
+//       let converted_date = new Date(Math.round((row.refunddate - 25569) * 864e5));
+//       converted_date = String(converted_date).slice(4, 15)
+//       row.refunddate = converted_date.split(" ")
+//       let day = row.refunddate[1];
+//       let month = row.refunddate[0];
+//       let year = row.refunddate[2];
+//       const date = day + '-' + month + '-' + year.slice(2, 4)
+//       // console.log(date)
+//       let msg1="Payment has been transferred for"
+//        let msg5=". Royal Express Finance hotlines: 09765400804, 09765400801"
+//       msg= msg1.concat(" ",row.ecode.toString() +","," ",row.amount.toLocaleString('en')+ "Ks,", "  ", date, " ", msg5)    
+     
+//         test1.push(      {
+//           "phone":row.phone.toString(),
+//           "message":msg,
+//           "source":"excel"
+//         })
+
+//     //    let a={
+//     //     "source":"excel",
+//     //     "raw":test1
+        
+//     // }
+//       axios.post("https://royalexpress.webstarterz.com/sms-server/api/v1/sms", 
+//       {
+//         "source":"excel",
+//         "raw":
+//         test1
+//       }  
+//      )
+//      .then((response) => {
+//        console.log(response);
+      
+//      });
+            
+//       // const firebasedata=
+//         // {
+//         //   "phone":row.phone.toString(),
+//         //   "message":msg
+//         // }
 
 
-            const MySwal = withReactContent(Swal)
-            MySwal.fire({
-             position: 'center',
-             icon: 'success',
-             title: 'Your work has been saved',
-
-                  showConfirmButton: false,
-             timer: 4000
-            }).then((result) => {
-              window.location.reload(true)
-            })
-           }
-
-        })
-
-
-
-              });
-
-  };
-
-
-//view
-//phone
-//message
-//status
-
-//send message button
-
-//hide menu and login page
-
-
-
+//        });
+//   };
 
   const handleCreateNewRow = (values)  => {
     tableData.push(values);
     setTableData([...tableData]);
   };
-
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
       tableData[row.index] = values;
-
+       console.log(values)
       // console.log(values.phone)
       //send/receive api updates here, then refetch or update local table data for re-render
-       axios .put("https://sms-server-tau.vercel.app/api/v1/sms",
+       axios .put("https://royalexpress.webstarterz.com/sms-server/api/v1/sms",
        {
         "id":row.getValue('id'),
-         "phone":values.phone,
-        "message":values.message
-      })
+         "phone":values.phone_no,
+        "message":values.message,
+        "source":values.source 
+      }
+      )
       .then((response) => {
         console.log(response.data);
         setTableData([...tableData]);
@@ -173,7 +154,6 @@ let datetime = currentdate.getDate() + "-"
       });
     }
   };
-
   // axios
   // .put(`${baseURL}/1`, {
   //   title: "Hello World!",
@@ -185,8 +165,7 @@ let datetime = currentdate.getDate() + "-"
   const handleCancelRowEdits = () => {
     setValidationErrors({});
   };
- 
-  const handleDeleteRow = useCallback(
+   const handleDeleteRow = useCallback(
    async (row) => {
       if (
         !confirm(`Are you sure you want to delete ${row.getValue('id')}`)
@@ -195,15 +174,19 @@ let datetime = currentdate.getDate() + "-"
       }
       //tableData
       //send api delete request here, then refetch or update local table data for re-render
-      await axios.delete("https://sms-server-tau.vercel.app/api/v1/sms",
+      await axios.delete("https://royalexpress.webstarterz.com/sms-server/api/v1/sms",
       {
-        "id":row.getValue('id')
-    }
- 
-    // lV89pVH5FvSdK0AVVI72
+        params: {
+          id: row.getValue('id')
+        }
+      }
+    //   {
+    //     "id":row.getValue('id')
+    // }
+   // lV89pVH5FvSdK0AVVI72
       )
       .then((response) => {
-        console.log(response)
+        console.log("DELETE",response.data)
         // console.log(JSON.stringify(response.data.listing[1]));
         // setExcelData(response.data.listing)
         // tableData.push(response.data.listing);
@@ -217,8 +200,7 @@ let datetime = currentdate.getDate() + "-"
   // //  const handleClickOpen = () => {
   //   setOpen(true);
   // };
-
-  // const handleClose = () => {
+ // const handleClose = () => {
   //   setOpen(false);
   // };
   // //sync to firebase
@@ -228,50 +210,53 @@ let datetime = currentdate.getDate() + "-"
  
   // };
 
-  const handleFileUpload=  (e) => {
-    e.preventDefault();
-    setDisabled(false);
-    // setOpen(true);
+  // const handleFileUpload=  (e) => {
+  //   e.preventDefault();
+  //   setDisabled(false);
+  //   // setOpen(true);
+  //   const reader = new FileReader();
+  //   reader.readAsBinaryString(e.target.files[0]);
+  //   reader.onload = (e) => {
+  //     const data = e.target.result;
+  //     const workbook = XLSX.read(data, { type: "binary" });
+  //     const sheetName = workbook.SheetNames[0];
+  //     const sheet = workbook.Sheets[sheetName];
+  //     const parsedData = XLSX.utils.sheet_to_json(sheet);
+  //      setExcelData(parsedData);
+  //     //  if(exceldata != ""){
+  //     //   setDisabled(false);
 
-    const reader = new FileReader();
-
-    reader.readAsBinaryString(e.target.files[0]);
-    reader.onload = (e) => {
-      const data = e.target.result;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const parsedData = XLSX.utils.sheet_to_json(sheet);
-       setExcelData(parsedData);
-      //  if(exceldata != ""){
-      //   setDisabled(false);
-
-      //  }
-      //  tableData.push(parsedData);
-      //  setTableData([...tableData]);
+  //     //  }
+  //     //  tableData.push(parsedData);
+  //     //  setTableData([...tableData]);
 
 
-      // for (let i = 0; i < data.length; i++) {
+  //     // for (let i = 0; i < data.length; i++) {
        
-      //   console.log(data[i])
-      // }
+  //     //   console.log(data[i])
+  //     // }
      
       
-    };
-  }//makeData
-//
+  //   };
+  // }
+
 
   const getData= async() =>{
-    
-    await axios.get("https://sms-server-tau.vercel.app/api/v1/sms"
+    // https://royalexpress.webstarterz.com/sms-server/api/v1/sms
+    await axios.get("https://royalexpress.webstarterz.com/sms-server/api/v1/sms"
  
  
     )
     .then((response) => {
-      // console.log("Hello",JSON.stringify(response.data.listing));
+      // console.log("Hello",JSON.stringify(response.data.data.data));handleupload
+
+
+
+
+      
       // setExcelData(response.data.listing)
       // tableData.push(response.data.listing);
-      setTableData([...response.data.listing]);
+      setTableData([...response.data.data.data]);
     });
   }
   const getCommonEditTextFieldProps = useCallback(
@@ -304,41 +289,40 @@ let datetime = currentdate.getDate() + "-"
     },
     [validationErrors],
   );
-
   const columns = 
 [
-
-  {
+ {
    accessorKey: 'id',
    header: 'id',
    size: 150,
    enableEditing:false
  },
  {
-  accessorKey: 'phone',
+  accessorKey: 'phone_no',
  header: 'phone',
  size: 150,
 },
 {
-  accessorKey: 'ecode',
- header: 'ecode',
- size: 150,
- enableEditing:false
+  accessorKey: 'message',
+ header: 'message',
+ size:300,
 },
- {
-    accessorKey: 'message', //normal accessorKey
-    header: 'message',
-   size: 200,
-  },
- {
-  accessorKey: 'source',
-   header: 'source',
-    size: 50,
- },
+//  {
+//     accessorKey: 'message', //normal accessorKey
+//     header: 'message',
+//    size: 200,
+//   },
+//  {
+//   accessorKey: 'source',
+//    header: 'source',
+//     size: 50,
+//  },
  {
           accessorKey: 'sent',
        // filterVariant: 'range', //if not using filter modes feature, use this instead of filterFn
         //  filterFn: 'between',
+        enableEditing:false,
+
          header: 'sent',
         size: 200,
          //custom conditional format and styling
@@ -347,9 +331,9 @@ let datetime = currentdate.getDate() + "-"
         component="span"
              sx={(theme) => ({
          backgroundColor:
-                 cell.getValue() === 0
+                 cell.getValue() == 0
                    ? theme.palette.warning.dark 
-                 : cell.getValue() === 1 && cell.getValue() === 1
+                 : cell.getValue() == 1 && cell.getValue() == 1
                  ? theme.palette.success.dark
                   : theme.palette.warning.dark,
             borderRadius: '0.25rem',
@@ -373,50 +357,33 @@ let datetime = currentdate.getDate() + "-"
 
 },
 {
+  accessorKey: 'source',
+   header: 'source',
+    size: 50,
+ },
+{
   accessorKey: 'created_at',
    header: 'created_at',
     size: 50,
+    enableEditing:false
+
  },
-    
-
-
-
-]
-
+    ]
 const handleContact = () => {
-  
- 
-};
+  };
   return (
     <div className="App">
-       <input 
+        {/* <div style={{display:'flex', marginTop:'40px',zIndex:'-1', position:'relative'}}> */}
+        {/* <input 
+        style={{marginTop:'20px'}}
         type="file" 
         accept=".xlsx, .xls, .csv" 
-        onChange={handleFileUpload} />
+        onChange={handleFileUpload} /> */}
+        {/* </div> */}
         <div>
-        <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
 
-        {/* <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?
-          "}
-        </DialogTitle> */}
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-Are you sure want to upload this file?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleupload} autoFocus>
-            Upload
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      
     </div>
       <MaterialReactTable
         displayColumnDefOptions={{
@@ -454,94 +421,83 @@ Are you sure want to upload this file?
         )}
 
         renderTopToolbarCustomActions={({ table }) => {
-          const handleSms = () => {
-            const MySwal = withReactContent(Swal)
-            MySwal.fire({
-              title: 'Are you sure?',
-              text: "Send SMS!",
-              icon: 'question',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes, send it!'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                let ph
-                let userData
-                let msg
-                let day
-                let id
-                  table.getSelectedRowModel().flatRows.map((row) => {
+          // const handleSms = () => {
+          //   const MySwal = withReactContent(Swal)
+          //   MySwal.fire({
+          //     title: 'Are you sure?',
+          //     text: "Send SMS!",
+          //     icon: 'question',
+          //     showCancelButton: true,
+          //     confirmButtonColor: '#3085d6',
+          //     cancelButtonColor: '#d33',
+          //     confirmButtonText: 'Yes, send it!'
+          //   }).then((result) => {
+          //     if (result.isConfirmed) {
+          //       let ph
+          //       let userData
+          //       let msg
+          //       let day
+          //       let id
+          //         table.getSelectedRowModel().flatRows.map((row) => {
           
-                    ph=row.getValue('phone')
-                    msg=row.getValue('message')
-                    id=row.getValue('id')
+          //           ph=row.getValue('phone')
+          //           msg=row.getValue('message')
+          //           id=row.getValue('id')
 
                     
-                   const userData = {
-                      "phone":ph.toString(),
-                      "message":msg,
-                      "id":id.toString()
-                    };
-                    //toUTCString()
-                     console.log(id)
-                     axios.post("https://sms-server-tau.vercel.app/api/v1/sms-server", 
-                     userData
+          //          const userData = {
+          //             "phone":ph.toString(),
+          //             "message":msg,
+          //             "id":id.toString()
+          //           };
+          //           //toUTCString()
+          //            console.log(id)
+          //            axios.post("https://sms-server-tau.vercel.app/api/v1/sms-server", 
+          //            userData
                  
-                    )
-                    .then((response) => {
-                      console.log(response);
-                      Swal.fire(
-                        'Good Job!',
-                        'Your file has been sent',
-                        'success'
-                      )
-                      window.location.reload(true)
+          //           )
+          //           .then((response) => {
+          //             console.log(response);
+          //             Swal.fire(
+          //               'Good Job!',
+          //               'Your file has been sent',
+          //               'success'
+          //             )
+                      // window.location.reload(true)
 
-                    });
-                            });
+          //           });
+          //                   });
            
-              }
-            })
-
-           
-                        // Payment has been transferred for E101516, 300000Ks 3/20/2023 . Royal Express Finance hotlines: 09765400804, 09765400801
-           };
+          //     }
+          //   })
+//               // Payment has been transferred for E101516, 300000Ks 3/20/2023 . Royal Express Finance hotlines: 09765400804, 09765400801
+          //  };
           return (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-  
-
-            <Button
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop:'5px' }}>
+              {/* <Button
               color="info"
               disabled={disabled}
              onClick={handleClickOpen}
               variant="contained"
             >
               Import
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               color="success"
               disabled={  !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected() }    
-              onClick={handleSms}
+              // onClick={handleSms}
               variant="contained"
             >
               Send SMS
-            </Button>
+            </Button> */}
             </div>
               );
             }}
           />
-         
-
-        
-        </div>
-        
-        
-            
-          );
+          </div>
+               );
         }
-        
-// const validateRequired = (value) => !!value.length;
+        // const validateRequired = (value) => !!value.length;
 // const validateEmail = (email) =>
 //   !!email.length &&
 //   email
@@ -552,3 +508,10 @@ Are you sure want to upload this file?
 // const validateAge = (age) => age >= 18 && age <= 50;
 
 export default Data;
+
+
+
+
+
+
+

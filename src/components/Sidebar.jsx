@@ -15,16 +15,16 @@ const Sidebar = ({children}) => {
     const[isOpen ,setIsOpen] = useState(false);
     const toggle = () => setIsOpen (!isOpen);
     const menuItem=[
-        {
-            path:"/dashboard",
-            name:"Dashboard",
-            icon:<FaTh/>
-        },
         // {
-        //     path:"/dashboard/exceldata",
-        //     name:"Send SMS",
-        //     icon:<FaCommentAlt/>
+        //     path:"/dashboard",
+        //     name:"Dashboard",
+        //     icon:<FaTh/>
         // },
+        {
+            path:"/dashboard/exceldata",
+            name:"Send SMS",
+            icon:<FaCommentAlt/>
+        },
         {
             path:"/dashboard/data",
             name:"Data",
